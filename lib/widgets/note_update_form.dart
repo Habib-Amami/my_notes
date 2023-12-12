@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:my_notes/constants/images.dart';
 import 'package:my_notes/services/database.dart';
+import 'package:my_notes/services/encryption.dart';
 
 class NoteUpdateForm extends StatelessWidget {
   final _formkey = GlobalKey<FormState>();
@@ -104,8 +105,11 @@ class NoteUpdateForm extends StatelessWidget {
                   FilledButton(
                     onPressed: () async {
                       await DataBase()
-                          .updateNote(id, _titleController.text,
-                              _contentController.text)
+                          .updateNote(
+                            id,
+                            EncryptionService.encrypt(_titleController.text),
+                            EncryptionService.encrypt(_contentController.text),
+                          )
                           .then((_) => Navigator.of(context).pop());
                     },
                     child: const Padding(

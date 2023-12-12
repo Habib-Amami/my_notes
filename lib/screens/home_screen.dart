@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:my_notes/constants/images.dart';
 import 'package:my_notes/services/database.dart';
+import 'package:my_notes/services/encryption.dart';
 import 'package:my_notes/widgets/note_card.dart';
 
 class Home extends StatefulWidget {
@@ -71,8 +72,12 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 itemCount: snapshot.data!.length,
                 itemBuilder: (context, index) {
                   return Notecard(
-                    title: snapshot.data![index].title,
-                    content: snapshot.data![index].content,
+                    title: EncryptionService.decrypt(
+                      snapshot.data![index].title,
+                    ),
+                    content: EncryptionService.decrypt(
+                      snapshot.data![index].content,
+                    ),
                     updatedAt: snapshot.data![index].updatedAt,
                     id: snapshot.data![index].id,
                   );
@@ -205,9 +210,11 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                   onPressed: () async {
                                     await DataBase()
                                         .addNote(
-                                          _titleController.text,
-                                          _contentController.text,
-                                        )
+                                            EncryptionService.encrypt(
+                                                _titleController.text),
+                                            EncryptionService.encrypt(
+                                              _contentController.text,
+                                            ))
                                         .then(
                                             (_) => Navigator.of(context).pop());
                                   },
